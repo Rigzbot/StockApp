@@ -24,12 +24,6 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun pullToRefresh() {
-        viewModelScope.launch {
-            newsRepository.refreshNews()
-        }
-    }
-
     val newsList = newsRepository.news
 
     class Factory(private val app: Application) : ViewModelProvider.Factory {
