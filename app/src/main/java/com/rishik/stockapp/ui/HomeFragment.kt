@@ -12,7 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.rishik.stockapp.R
 import com.rishik.stockapp.adapters.NewsAdapter
 import com.rishik.stockapp.adapters.NewsClick

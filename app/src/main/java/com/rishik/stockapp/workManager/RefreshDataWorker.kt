@@ -7,7 +7,7 @@ import com.rishik.stockapp.database.getDatabase
 import com.rishik.stockapp.repository.NewsRepository
 import retrofit2.HttpException
 
-class RefreshNewsWorker(appContext: Context, params: WorkerParameters):
+class RefreshDataWorker(appContext: Context, params: WorkerParameters):
     CoroutineWorker(appContext, params) {
         companion object {
             const val WORK_NAME = "RefreshDataWorker"

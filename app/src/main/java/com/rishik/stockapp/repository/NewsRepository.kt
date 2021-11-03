@@ -11,9 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 
-private const val bloomUrl = "https://data.bloomberglp.com/company/sites/2/2019/01/logobbg-wht.png"
-private const val marketWatchUrl = "https://mw3.wsj.net/mw5/content/logos/mw_logo_social.png"
-
 class NewsRepository(private val database: NewsDatabase) {
 
     /**
@@ -24,7 +21,7 @@ class NewsRepository(private val database: NewsDatabase) {
     }
 
     /**
-     * Refresh the news stored in the offline cache.
+     * Refresh the news stored in the offline cache, delete old news.
      *
      * This function uses the IO dispatcher to ensure the database insert operation happens on
      * the IO dispatcher.
@@ -34,6 +31,7 @@ class NewsRepository(private val database: NewsDatabase) {
     suspend fun refreshNews() {
         withContext(Dispatchers.IO) {
             val newsList = Network.newsList.getNewsListAsync().await()
+            database.newsDao.deleteAll()
             database.newsDao.insertAll(*newsList.asDatabaseModel())
         }
     }

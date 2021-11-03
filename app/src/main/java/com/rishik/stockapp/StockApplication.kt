@@ -3,7 +3,7 @@ package com.rishik.stockapp
 import android.app.Application
 import android.os.Build
 import androidx.work.*
-import com.rishik.stockapp.workManager.RefreshNewsWorker
+import com.rishik.stockapp.workManager.RefreshDataWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,12 +36,12 @@ class StockApplication: Application() {
                 }
             }.build()
 
-        val repeatingRequest = PeriodicWorkRequestBuilder<RefreshNewsWorker>(15, TimeUnit.MINUTES)
+        val repeatingRequest = PeriodicWorkRequestBuilder<RefreshDataWorker>(1, TimeUnit.HOURS)
             .setConstraints(constraints)
             .build()
 
         WorkManager.getInstance().enqueueUniquePeriodicWork(
-            RefreshNewsWorker.WORK_NAME,
+            RefreshDataWorker.WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             repeatingRequest
         )
