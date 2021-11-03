@@ -3,6 +3,7 @@ package com.rishik.stockapp.database
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import java.util.*
 
 @Dao
 interface NewsDao {
@@ -10,7 +11,7 @@ interface NewsDao {
     fun getNews(): LiveData<List<DatabaseNews>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(news: DatabaseNews)
+    fun insertAll(vararg news: DatabaseNews)
 }
 
 @Database(entities = [DatabaseNews::class], version = 1)

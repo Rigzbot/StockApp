@@ -9,6 +9,7 @@ import com.rishik.stockapp.network.Network
 import com.rishik.stockapp.network.asDatabaseModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.*
 
 private const val bloomUrl = "https://data.bloomberglp.com/company/sites/2/2019/01/logobbg-wht.png"
 private const val marketWatchUrl = "https://mw3.wsj.net/mw5/content/logos/mw_logo_social.png"
@@ -33,9 +34,7 @@ class NewsRepository(private val database: NewsDatabase) {
     suspend fun refreshNews() {
         withContext(Dispatchers.IO) {
             val newsList = Network.newsList.getNewsListAsync().await()
-            newsList.map {
-                database.newsDao.insert(it.asDatabaseModel())
-            }
+            database.newsDao.insertAll(*newsList.asDatabaseModel())
         }
     }
 }
