@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +15,6 @@ import com.rishik.stockapp.R
 import com.rishik.stockapp.adapters.NewsAdapter
 import com.rishik.stockapp.adapters.NewsClick
 import com.rishik.stockapp.databinding.FragmentHomeBinding
-import com.rishik.stockapp.domain.News
 import com.rishik.stockapp.viewmodels.HomeViewModel
 
 class HomeFragment : Fragment() {
@@ -25,14 +23,17 @@ class HomeFragment : Fragment() {
         val activity = requireNotNull(this.activity) {
             "You can only access viewModel after onViewCreated"
         }
-        ViewModelProvider(this, HomeViewModel.Factory(activity.application)).get(HomeViewModel::class.java)
+        ViewModelProvider(
+            this,
+            HomeViewModel.Factory(activity.application)
+        ).get(HomeViewModel::class.java)
     }
 
     private var viewModelAdapter: NewsAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.newsList.observe(viewLifecycleOwner, Observer<List<News>> { news ->
+        viewModel.newsList.observe(viewLifecycleOwner, { news ->
             news?.apply {
                 viewModelAdapter?.news = news
             }

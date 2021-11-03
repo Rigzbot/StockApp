@@ -3,7 +3,6 @@ package com.rishik.stockapp.database
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import java.util.*
 
 @Dao
 interface NewsDao {
@@ -18,7 +17,7 @@ interface NewsDao {
 }
 
 @Database(entities = [DatabaseNews::class], version = 1)
-abstract class NewsDatabase: RoomDatabase() {
+abstract class NewsDatabase : RoomDatabase() {
     abstract val newsDao: NewsDao
 }
 

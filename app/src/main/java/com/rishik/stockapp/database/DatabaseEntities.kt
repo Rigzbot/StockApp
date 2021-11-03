@@ -15,7 +15,7 @@ data class DatabaseNews constructor(
 )
 
 fun List<DatabaseNews>.asDomainModel(): List<News> {
-    return map{
+    return map {
         News(
             url = it.url,
             headline = it.headline,

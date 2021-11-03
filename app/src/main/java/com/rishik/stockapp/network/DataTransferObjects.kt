@@ -3,7 +3,6 @@ package com.rishik.stockapp.network
 import com.rishik.stockapp.database.DatabaseNews
 import com.rishik.stockapp.domain.News
 import com.squareup.moshi.JsonClass
-import java.util.*
 
 @JsonClass(generateAdapter = true)
 data class NetworkNews(

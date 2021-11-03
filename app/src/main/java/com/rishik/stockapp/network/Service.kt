@@ -2,10 +2,7 @@ package com.rishik.stockapp.network
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.rishik.stockapp.BuildConfig
-import com.rishik.stockapp.domain.News
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
@@ -27,7 +24,7 @@ private val moshi = Moshi.Builder()
 /**
  * Entry point to get news. Call like 'Network.news.getNewsList()'
  */
-object Network{
+object Network {
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(MoshiConverterFactory.create(moshi))

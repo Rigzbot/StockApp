@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-class StockApplication: Application() {
+class StockApplication : Application() {
     private val applicationScope = CoroutineScope(Dispatchers.Default)
 
     /**
@@ -31,7 +31,7 @@ class StockApplication: Application() {
             .setRequiredNetworkType(NetworkType.UNMETERED)
             .setRequiresBatteryNotLow(true)
             .apply {
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     setRequiresDeviceIdle(true)
                 }
             }.build()

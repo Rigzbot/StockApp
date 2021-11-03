@@ -55,7 +55,7 @@ class NewsAdapter(private val callback: NewsClick) : RecyclerView.Adapter<NewsVi
                 val i = Intent(Intent.ACTION_SEND)
                 i.type = "text/plain"
                 i.putExtra(Intent.EXTRA_SUBJECT, "I found this great article on the StockX App")
-                i.putExtra(Intent.EXTRA_TEXT,news[position].url)
+                i.putExtra(Intent.EXTRA_TEXT, news[position].url)
                 context!!.startActivity(Intent.createChooser(i, "Share URL"))
             }
         }
