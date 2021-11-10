@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +19,10 @@ import com.rishik.stockapp.databinding.FragmentHomeBinding
 import com.rishik.stockapp.viewmodels.HomeViewModel
 
 class HomeFragment : Fragment() {
+    /**
+     * Example data source of array
+     */
+    private val stocks = arrayOf("Amazon", "Apple", "Tesla", "Microsoft", "Facebook", "Netflix")
 
     private val viewModel: HomeViewModel by lazy {
         val activity = requireNotNull(this.activity) {
@@ -65,6 +70,11 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = viewModelAdapter
         }
+
+        //TODO: Create custom layout for array adapter
+        val autoComplete = binding.searchBar
+        val arrayAdapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, stocks)
+        autoComplete.setAdapter(arrayAdapter)
 
         return binding.root
     }
