@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="stock"
+            type="com.rishik.stockapp.domain.Stocks" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginVertical="8dp"
+        android:paddingHorizontal="4dp"
+        android:background="@color/dark_grey">
+
+        <TextView
+            android:id="@+id/ticker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/raleway"
+            android:textColor="@color/text_light"
+            android:layout_centerVertical="true"
+            tools:text="AMZNW"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="@{stock.symbol}"/>
+
+        <!--TODO: Add check for overflow-->
+        <TextView
+            style="@style/mainTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="80dp"
+            android:text="@{stock.description}"
+            tools:text="AMAZON" />
+    </RelativeLayout>
+</layout>

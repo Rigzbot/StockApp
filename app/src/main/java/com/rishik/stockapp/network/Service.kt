@@ -15,15 +15,15 @@ private const val API_KEY = BuildConfig.API_KEY
 interface StockService {
     @GET("news?category=general&token=$API_KEY")
     fun getNewsListAsync(): Deferred<List<NetworkNews>>
+
+    @GET("stock/symbol?exchange=US&token=$API_KEY")
+    fun getStockNamesAsync(): Deferred<List<NetworkStocks>>
 }
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
 
-/**
- * Entry point to get news. Call like 'Network.news.getNewsList()'
- */
 object Network {
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -31,5 +31,5 @@ object Network {
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
 
-    val newsList: StockService = retrofit.create(StockService::class.java)
+    val stockService: StockService = retrofit.create(StockService::class.java)
 }

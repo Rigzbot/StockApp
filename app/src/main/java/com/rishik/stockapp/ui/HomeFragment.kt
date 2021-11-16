@@ -7,13 +7,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.rishik.stockapp.R
 import com.rishik.stockapp.adapters.NewsAdapter
 import com.rishik.stockapp.adapters.NewsClick
+import com.rishik.stockapp.adapters.SearchAdapter
 import com.rishik.stockapp.databinding.FragmentHomeBinding
 import com.rishik.stockapp.viewmodels.HomeViewModel
 
@@ -29,13 +31,33 @@ class HomeFragment : Fragment() {
         ).get(HomeViewModel::class.java)
     }
 
-    private var viewModelAdapter: NewsAdapter? = null
+    private var viewModelNewsAdapter: NewsAdapter? = null
+    private var viewModelStocksAdapter: SearchAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.newsList.observe(viewLifecycleOwner, { news ->
             news?.apply {
-                viewModelAdapter?.news = news
+                viewModelNewsAdapter?.news = news
+            }
+        })
+        viewModel.stockList.observe(viewLifecycleOwner, { stocks ->
+            stocks?.apply {
+                viewModelStocksAdapter?.stocks = stocks
+            }
+        })
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(viewModel.expanded.value!!)
+                    viewModel.searchingFalse()
+                else {
+                    isEnabled = false
+                    activity?.onBackPressed()
+                }
             }
         })
     }
@@ -55,17 +77,28 @@ class HomeFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        viewModelAdapter = NewsAdapter(NewsClick {
+        viewModelNewsAdapter = NewsAdapter(NewsClick {
             //Generate Intent to read article
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.url))
             startActivity(intent)
         })
 
-        binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
+        viewModelStocksAdapter = SearchAdapter()
+
+        binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = viewModelAdapter
+            adapter = viewModelNewsAdapter
         }
 
+        binding.searchRv.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = viewModelStocksAdapter
+        }
+
+        binding.searchBarView.setOnClickListener {
+            binding.searchBar.findViewById<View>(R.id.search_button).performClick()
+            viewModel.searchingTrue()
+        }
         return binding.root
     }
 }
