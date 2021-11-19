@@ -1,9 +1,11 @@
 package com.rishik.stockapp.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.rishik.stockapp.database.getNewsDatabase
 import com.rishik.stockapp.database.getStockDatabase
+import com.rishik.stockapp.domain.Stocks
 import com.rishik.stockapp.repository.Repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +24,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             repository.refreshNews()
             repository.refreshStocks()
-            _expanded.value = false
         }
     }
 
@@ -30,7 +31,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val stockList = repository.stocks
 
     //true -> searching, false -> not searching
-    private val _expanded = MutableLiveData<Boolean>()
+    private val _expanded = MutableLiveData(false)
     val expanded: LiveData<Boolean>
         get() = _expanded
 

@@ -70,6 +70,7 @@
                 <View
                     android:id="@+id/search_bar_view"
                     android:layout_width="match_parent"
+                    android:visibility="@{!viewModel.expanded ? View.VISIBLE : View.GONE }"
                     android:layout_height="50dp"
                     android:layout_marginTop="-60dp" />
             </LinearLayout>

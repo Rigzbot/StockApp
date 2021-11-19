@@ -1,6 +1,5 @@
 package com.rishik.stockapp.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
@@ -11,12 +10,11 @@ import com.rishik.stockapp.databinding.SearchItemBinding
 import com.rishik.stockapp.domain.Stocks
 
 class SearchAdapter: RecyclerView.Adapter<SearchViewHolder>() {
-    var stocks: List<Stocks> = emptyList()
-        @SuppressLint("NotifyDataSetChanged")
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    private var stocks = ArrayList<Stocks>()
+
+    fun setData(stocksList: List<Stocks>){
+        stocks = stocksList as ArrayList<Stocks>
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
         val withDataBinding: SearchItemBinding = DataBindingUtil.inflate(

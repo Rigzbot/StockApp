@@ -1,5 +1,6 @@
 package com.rishik.stockapp.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -17,9 +18,11 @@ import com.rishik.stockapp.adapters.NewsAdapter
 import com.rishik.stockapp.adapters.NewsClick
 import com.rishik.stockapp.adapters.SearchAdapter
 import com.rishik.stockapp.databinding.FragmentHomeBinding
+import com.rishik.stockapp.domain.Stocks
 import com.rishik.stockapp.viewmodels.HomeViewModel
 
 class HomeFragment : Fragment() {
+    private var stockList = ArrayList<Stocks>()
 
     private val viewModel: HomeViewModel by lazy {
         val activity = requireNotNull(this.activity) {
@@ -41,9 +44,10 @@ class HomeFragment : Fragment() {
                 viewModelNewsAdapter?.news = news
             }
         })
-        viewModel.stockList.observe(viewLifecycleOwner, { stocks ->
-            stocks?.apply {
-                viewModelStocksAdapter?.stocks = stocks
+
+        viewModel.stockList.observe(viewLifecycleOwner, {
+            it.apply {
+                stockList = it as ArrayList<Stocks>
             }
         })
     }
@@ -52,7 +56,7 @@ class HomeFragment : Fragment() {
         super.onCreate(savedInstanceState)
         activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if(viewModel.expanded.value!!)
+                if (viewModel.expanded.value!!)
                     viewModel.searchingFalse()
                 else {
                     isEnabled = false
@@ -99,6 +103,32 @@ class HomeFragment : Fragment() {
             binding.searchBar.findViewById<View>(R.id.search_button).performClick()
             viewModel.searchingTrue()
         }
+
+        //TODO(show resent searches instead of complete list)
+        viewModelStocksAdapter!!.setData(stockList)
+
+        binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onQueryTextChange(newText: String?): Boolean {
+                val tempArr = ArrayList<Stocks>()
+
+                for (stock in stockList) {
+                    if (stock.description.lowercase()
+                            .contains(newText.toString().lowercase()) || stock.symbol.lowercase()
+                            .contains(newText.toString().lowercase())
+                    ) {
+                        tempArr.add(stock)
+                    }
+                }
+                viewModelStocksAdapter!!.setData(tempArr)
+                viewModelStocksAdapter!!.notifyDataSetChanged()
+                return true
+            }
+        })
         return binding.root
     }
 }
