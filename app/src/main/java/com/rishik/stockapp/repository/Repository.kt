@@ -1,5 +1,6 @@
 package com.rishik.stockapp.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.rishik.stockapp.database.*
@@ -33,18 +34,26 @@ class Repository(private val database: NewsDatabase, private val databaseStocks:
      * To actually load the news for use, observe [news]
      */
     suspend fun refreshNews() {
-        withContext(Dispatchers.IO) {
-            val newsList = Network.stockService.getNewsListAsync().await()
-            database.newsDao.deleteAll()
-            database.newsDao.insertAll(*newsList.asNewsDatabaseModel())
+        try {
+            withContext(Dispatchers.IO) {
+                val newsList = Network.stockService.getNewsListAsync().await()
+                database.newsDao.deleteAll()
+                database.newsDao.insertAll(*newsList.asNewsDatabaseModel())
+            }
+        } catch (e: Exception) {
+            Log.d("NetworkHelper", "Error is: ${e.localizedMessage}")
         }
     }
 
     suspend fun refreshStocks() {
-        withContext(Dispatchers.IO) {
-            val stocksList = Network.stockService.getStockNamesAsync().await()
-            databaseStocks.stocksDao.deleteAll()
-            databaseStocks.stocksDao.insertAll(*stocksList.asStocksDatabaseModel())
+        try {
+            withContext(Dispatchers.IO) {
+                val stocksList = Network.stockService.getStockNamesAsync().await()
+                databaseStocks.stocksDao.deleteAll()
+                databaseStocks.stocksDao.insertAll(*stocksList.asStocksDatabaseModel())
+            }
+        } catch (e: Exception) {
+            Log.d("NetworkHelper", "Error is: ${e.localizedMessage}")
         }
     }
 }

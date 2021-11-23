@@ -12,9 +12,6 @@ import com.rishik.stockapp.databinding.NewsItemBinding
 import com.rishik.stockapp.domain.News
 import android.content.Intent
 
-@SuppressLint("StaticFieldLeak")
-private var context: Context? = null
-
 class NewsClick(val block: (News) -> Unit) {
     /**
      * Called when a news is clicked
@@ -25,6 +22,8 @@ class NewsClick(val block: (News) -> Unit) {
 }
 
 class NewsAdapter(private val callback: NewsClick) : RecyclerView.Adapter<NewsViewHolder>() {
+    private var context: Context? = null
+
     var news: List<News> = emptyList()
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
@@ -32,6 +31,7 @@ class NewsAdapter(private val callback: NewsClick) : RecyclerView.Adapter<NewsVi
             notifyDataSetChanged()
         }
 
+    @SuppressLint("VisibleForTests")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
         val withDataBinding: NewsItemBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),

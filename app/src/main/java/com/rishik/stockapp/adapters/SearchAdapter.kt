@@ -9,8 +9,8 @@ import com.rishik.stockapp.R
 import com.rishik.stockapp.databinding.SearchItemBinding
 import com.rishik.stockapp.domain.Stocks
 
-class SearchAdapter: RecyclerView.Adapter<SearchViewHolder>() {
-    private var stocks = ArrayList<Stocks>()
+class SearchAdapter(stocksList: List<Stocks>): RecyclerView.Adapter<SearchViewHolder>() {
+    private var stocks = stocksList
 
     fun setData(stocksList: List<Stocks>){
         stocks = stocksList as ArrayList<Stocks>

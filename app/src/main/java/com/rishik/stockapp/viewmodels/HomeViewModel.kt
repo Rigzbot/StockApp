@@ -13,18 +13,20 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
-    private val viewModelJob = SupervisorJob()
-    private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-
     private val database = getNewsDatabase(application)
     private val databaseStocks = getStockDatabase(application)
     private val repository = Repository(database, databaseStocks)
 
     init {
-        viewModelScope.launch {
-            repository.refreshNews()
-            repository.refreshStocks()
+        if(repository.news.value.isNullOrEmpty()){
+            viewModelScope.launch {
+                repository.refreshNews()
+            }
         }
+        if(repository.stocks.value.isNullOrEmpty())
+            viewModelScope.launch {
+                repository.refreshStocks()
+            }
     }
 
     val newsList = repository.news

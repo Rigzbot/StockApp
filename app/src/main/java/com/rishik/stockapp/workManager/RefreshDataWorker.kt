@@ -21,6 +21,7 @@ class RefreshDataWorker(appContext: Context, params: WorkerParameters) :
 
         return try {
             repository.refreshNews()
+            repository.refreshStocks()
             Result.success()
         } catch (e: HttpException) {
             Result.retry()
