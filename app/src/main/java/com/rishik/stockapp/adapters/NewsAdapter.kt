@@ -1,16 +1,13 @@
 package com.rishik.stockapp.adapters
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.LayoutRes
-import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.rishik.stockapp.R
+import com.rishik.stockapp.adapters.NewsAdapter.*
 import com.rishik.stockapp.databinding.NewsItemBinding
 import com.rishik.stockapp.domain.News
-import android.content.Intent
 
 class NewsClick(val block: (News) -> Unit) {
     /**
@@ -21,51 +18,37 @@ class NewsClick(val block: (News) -> Unit) {
     fun onClick(news: News) = block(news)
 }
 
-class NewsAdapter(private val callback: NewsClick) : RecyclerView.Adapter<NewsViewHolder>() {
-    private var context: Context? = null
+class NewsAdapter(private val callback: NewsClick) :
+    ListAdapter<News, NewsViewHolder>(NewsViewHolder.NewsComparator()) {
 
-    var news: List<News> = emptyList()
-        @SuppressLint("NotifyDataSetChanged")
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-
-    @SuppressLint("VisibleForTests")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
-        val withDataBinding: NewsItemBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(parent.context),
-            NewsViewHolder.LAYOUT,
-            parent, false
-        )
-        context = parent.context
-        return NewsViewHolder(withDataBinding)
+        val binding = NewsItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return NewsViewHolder(binding)
     }
 
-    override fun getItemCount() = news.size
+    override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
+        val currentItem = getItem(position)
+        if (currentItem != null) {
+            holder.bind(currentItem, callback)
+        }
+    }
 
-    override fun onBindViewHolder(
-        holder: NewsViewHolder,
-        position: Int
-    ) {
-        holder.viewDataBinding.also {
-            it.news = news[position]
-            it.newsCallback = callback
-            it.shareButton.setOnClickListener {
-                val i = Intent(Intent.ACTION_SEND)
-                i.type = "text/plain"
-                i.putExtra(Intent.EXTRA_SUBJECT, "I found this great article on the StockX App")
-                i.putExtra(Intent.EXTRA_TEXT, news[position].url)
-                context!!.startActivity(Intent.createChooser(i, "Share URL"))
+    class NewsViewHolder(private val binding: NewsItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(news: News, callback: NewsClick) {
+            binding.apply {
+                this.news = news
+                this.newsCallback = callback
             }
         }
-    }
-}
 
-class NewsViewHolder(val viewDataBinding: NewsItemBinding) :
-    RecyclerView.ViewHolder(viewDataBinding.root) {
-    companion object {
-        @LayoutRes
-        val LAYOUT = R.layout.news_item
+        class NewsComparator : DiffUtil.ItemCallback<News>() {
+            override fun areItemsTheSame(oldItem: News, newItem: News) =
+                oldItem.url == newItem.url
+
+            override fun areContentsTheSame(oldItem: News, newItem: News): Boolean =
+                oldItem == newItem
+        }
     }
 }
