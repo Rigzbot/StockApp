@@ -2,45 +2,50 @@ package com.rishik.stockapp.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.LayoutRes
-import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.rishik.stockapp.R
 import com.rishik.stockapp.databinding.SearchItemBinding
-import com.rishik.stockapp.domain.Stocks
+import com.rishik.stockapp.domain.Stock
 
-class SearchAdapter(stocksList: List<Stocks>): RecyclerView.Adapter<SearchViewHolder>() {
-    private var stocks = stocksList
-
-    fun setData(stocksList: List<Stocks>){
-        stocks = stocksList as ArrayList<Stocks>
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
-        val withDataBinding: SearchItemBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(parent.context),
-            SearchViewHolder.LAYOUT,
-            parent, false
-        )
-        return SearchViewHolder(withDataBinding)
-    }
-
-    override fun getItemCount() = stocks.size
-
-    override fun onBindViewHolder(
-        holder: SearchViewHolder,
-        position: Int
-    ) {
-        holder.viewDataBinding.also {
-            it.stock = stocks[position]
-        }
-    }
+class SearchClick(val block: (Stock) -> Unit) {
+    /**
+     * Called when a stock is clicked
+     */
+    fun onClick(stock: Stock) = block(stock)
 }
 
-class SearchViewHolder(val viewDataBinding: SearchItemBinding) :
-    RecyclerView.ViewHolder(viewDataBinding.root) {
-    companion object {
-        @LayoutRes
-        val LAYOUT = R.layout.search_item
+class SearchAdapter(private val callback: SearchClick) :
+    ListAdapter<Stock, SearchAdapter.SearchViewHolder>(SearchViewHolder.SearchComparator()) {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
+        val binding = SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return SearchViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
+        val currentItem = getItem(position)
+        if (currentItem != null) {
+            holder.bind(currentItem, callback)
+        }
+    }
+
+    class SearchViewHolder(private val binding: SearchItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(stock: Stock, callback: SearchClick) {
+            binding.apply {
+                this.stock = stock
+                this.searchCallback = callback
+            }
+        }
+
+        class SearchComparator : DiffUtil.ItemCallback<Stock>() {
+            override fun areItemsTheSame(oldItem: Stock, newItem: Stock) =
+                oldItem.symbol == newItem.symbol
+
+            override fun areContentsTheSame(oldItem: Stock, newItem: Stock): Boolean =
+                oldItem == newItem
+        }
     }
 }
