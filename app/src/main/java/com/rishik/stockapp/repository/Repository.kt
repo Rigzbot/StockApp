@@ -1,59 +1,48 @@
 package com.rishik.stockapp.repository
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
-import com.rishik.stockapp.database.*
-import com.rishik.stockapp.domain.News
-import com.rishik.stockapp.domain.Stocks
-import com.rishik.stockapp.network.Network
-import com.rishik.stockapp.network.asNewsDatabaseModel
-import com.rishik.stockapp.network.asStocksDatabaseModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import androidx.room.withTransaction
+import com.rishik.stockapp.database.NewsDatabase
+import com.rishik.stockapp.database.StocksDatabase
+import com.rishik.stockapp.network.StockService
+import com.rishik.stockapp.util.networkBoundResource
+import javax.inject.Inject
 
-class Repository(private val database: NewsDatabase, private val databaseStocks: StocksDatabase) {
+class Repository @Inject constructor(
+    private val api: StockService,
+    private val dbNews: NewsDatabase,
+    private val dbStocks: StocksDatabase
+) {
+    private val newsDao = dbNews.newsDao()
+    private val stocksDao = dbStocks.stocksDao()
 
-    /**
-     * List of news that can be showed on screen
-     */
-    val news: LiveData<List<News>> = Transformations.map(database.newsDao.getNews()) {
-        it.asNewsDomainModel()
-    }
-
-    val stocks: LiveData<List<Stocks>> = Transformations.map(databaseStocks.stocksDao.getStocks()) {
-        it.asStockDomainModel()
-    }
-
-    /**
-     * Refresh the news stored in the offline cache, delete old news.
-     *
-     * This function uses the IO dispatcher to ensure the database insert operation happens on
-     * the IO dispatcher.
-     *
-     * To actually load the news for use, observe [news]
-     */
-    suspend fun refreshNews() {
-        try {
-            withContext(Dispatchers.IO) {
-                val newsList = Network.stockService.getNewsListAsync().await()
-                database.newsDao.deleteAll()
-                database.newsDao.insertAll(*newsList.asNewsDatabaseModel())
+    fun getStocks() = networkBoundResource(
+        query = {
+            stocksDao.getStocks()
+        },
+        fetch = {
+            api.getStockNamesAsync()
+        },
+        saveFetchResult = {
+            dbStocks.withTransaction {
+                stocksDao.deleteAll()
+                stocksDao.insertAll(it)
             }
-        } catch (e: Exception) {
-            Log.d("NetworkHelper", "Error is: ${e.localizedMessage}")
         }
-    }
+    )
 
-    suspend fun refreshStocks() {
-        try {
-            withContext(Dispatchers.IO) {
-                val stocksList = Network.stockService.getStockNamesAsync().await()
-                databaseStocks.stocksDao.deleteAll()
-                databaseStocks.stocksDao.insertAll(*stocksList.asStocksDatabaseModel())
+    fun getNews() = networkBoundResource(
+        query = {
+            newsDao.getNews()
+        },
+        fetch = {
+            api.getNewsListAsync()
+        },
+        saveFetchResult = {
+            //either both will work or none
+            dbNews.withTransaction {
+                newsDao.deleteAll()
+                newsDao.insertAll(it)
             }
-        } catch (e: Exception) {
-            Log.d("NetworkHelper", "Error is: ${e.localizedMessage}")
         }
-    }
+    )
 }

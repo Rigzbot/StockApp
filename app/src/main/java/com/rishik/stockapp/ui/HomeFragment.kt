@@ -10,31 +10,28 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.ViewModelProvider
+import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.rishik.stockapp.R
-import com.rishik.stockapp.adapters.NewsAdapter
-import com.rishik.stockapp.adapters.NewsClick
-import com.rishik.stockapp.adapters.SearchAdapter
+import com.rishik.stockapp.adapters.*
 import com.rishik.stockapp.databinding.FragmentHomeBinding
 import com.rishik.stockapp.domain.Stocks
+import com.rishik.stockapp.util.Resource
 import com.rishik.stockapp.viewmodels.HomeViewModel
+import com.rishik.stockapp.workManager.RefreshDataWorker
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
     private var stockList = ArrayList<Stocks>()
 
     private var _binding: FragmentHomeBinding? = null
     private val binding: FragmentHomeBinding get() = _binding!!
 
-    private val viewModel: HomeViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "You can only access viewModel after onViewCreated"
-        }
-        ViewModelProvider(
-            this,
-            HomeViewModel.Factory(activity.application)
-        ).get(HomeViewModel::class.java)
-    }
+    private val viewModel: HomeViewModel by viewModels()
 
     private lateinit var viewModelNewsAdapter: NewsAdapter
     private lateinit var viewModelStocksAdapter: SearchAdapter
@@ -57,6 +54,7 @@ class HomeFragment : Fragment() {
 
         setupViews()
         observeValues()
+        enqueueWorker()
     }
 
     private fun setupViews() {
@@ -112,17 +110,23 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeValues() {
-        viewModel.newsList.observe(viewLifecycleOwner, { news ->
-            news?.apply {
-                viewModelNewsAdapter.news = news
-            }
+        viewModel.news.observe(viewLifecycleOwner, { result ->
+            viewModelNewsAdapter.submitList(result.data)
+
+            binding.loadingSpinner.isVisible = result is Resource.Loading && result.data.isNullOrEmpty()
+            binding.textViewError.isVisible = result is Resource.Error && result.data.isNullOrEmpty()
+            binding.textViewError.text = result.error?.localizedMessage
         })
 
-        viewModel.stockList.observe(viewLifecycleOwner, {
-            it.apply {
-                stockList = it as ArrayList<Stocks>
-            }
+        viewModel.stocks.observe(viewLifecycleOwner, {
+            viewModelStocksAdapter.setData(it.data!!)
+            stockList = it.data as ArrayList<Stocks>
         })
+    }
+
+    private fun enqueueWorker() {
+        val request = OneTimeWorkRequestBuilder<RefreshDataWorker>().build()
+        WorkManager.getInstance(requireContext().applicationContext).enqueue(request)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

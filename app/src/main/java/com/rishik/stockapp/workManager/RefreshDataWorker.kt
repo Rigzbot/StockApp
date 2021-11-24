@@ -1,27 +1,29 @@
 package com.rishik.stockapp.workManager
 
 import android.content.Context
-import androidx.work.CoroutineWorker
+import androidx.hilt.work.HiltWorker
+import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.rishik.stockapp.database.getNewsDatabase
-import com.rishik.stockapp.database.getStockDatabase
 import com.rishik.stockapp.repository.Repository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import retrofit2.HttpException
 
-class RefreshDataWorker(appContext: Context, params: WorkerParameters) :
-    CoroutineWorker(appContext, params) {
+@HiltWorker
+class RefreshDataWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted params: WorkerParameters,
+    private val repository: Repository,
+) : Worker(appContext, params) {
+
     companion object {
-        const val WORK_NAME = "RefreshDataWorker"
+        const val TAG = "RefreshDataWorker"
     }
 
-    override suspend fun doWork(): Result {
-        val database = getNewsDatabase(applicationContext)
-        val databaseStocks = getStockDatabase(applicationContext)
-        val repository = Repository(database, databaseStocks)
-
+    override fun doWork(): Result {
         return try {
-            repository.refreshNews()
-            repository.refreshStocks()
+            repository.getNews()
+            repository.getStocks()
             Result.success()
         } catch (e: HttpException) {
             Result.retry()

@@ -1,42 +1,28 @@
 package com.rishik.stockapp.database
 
-import android.content.Context
-import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.rishik.stockapp.domain.News
+import com.rishik.stockapp.domain.Stocks
+import kotlinx.coroutines.flow.Flow
 
 /**
- * News data base [url, headline, date, imageUrl, source]
+ * News data base [url, headline, datetime, image, source]
  */
 @Dao
 interface NewsDao {
     @Query("SELECT * FROM databasenews")
-    fun getNews(): LiveData<List<DatabaseNews>>
+    fun getNews(): Flow<List<News>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg news: DatabaseNews)
+    suspend fun insertAll(news: List<News>)
 
     @Query("DELETE FROM databasenews")
-    fun deleteAll()
+    suspend fun deleteAll()
 }
 
-@Database(entities = [DatabaseNews::class], version = 1)
+@Database(entities = [News::class], version = 1)
 abstract class NewsDatabase : RoomDatabase() {
-    abstract val newsDao: NewsDao
-}
-
-private lateinit var NEWS_INSTANCE: NewsDatabase
-
-fun getNewsDatabase(context: Context): NewsDatabase {
-    synchronized(NewsDatabase::class.java) {
-        if (!::NEWS_INSTANCE.isInitialized) {
-            NEWS_INSTANCE = Room.databaseBuilder(
-                context.applicationContext,
-                NewsDatabase::class.java,
-                "news"
-            ).build()
-        }
-    }
-    return NEWS_INSTANCE
+    abstract fun newsDao(): NewsDao
 }
 
 /**
@@ -45,31 +31,16 @@ fun getNewsDatabase(context: Context): NewsDatabase {
 @Dao
 interface StocksDao {
     @Query("SELECT * FROM databasestocks LIMIT 10")
-    fun getStocks(): LiveData<List<DatabaseStocks>>
+    fun getStocks(): Flow<List<Stocks>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg stocks: DatabaseStocks)
+    suspend fun insertAll(stocks: List<Stocks>)
 
     @Query("DELETE FROM databasestocks")
-    fun deleteAll()
+    suspend fun deleteAll()
 }
 
-@Database(entities = [DatabaseStocks::class], version = 1)
+@Database(entities = [Stocks::class], version = 1)
 abstract class StocksDatabase: RoomDatabase() {
-    abstract val stocksDao: StocksDao
-}
-
-private lateinit var STOCKS_INSTANCE: StocksDatabase
-
-fun getStockDatabase(context: Context): StocksDatabase {
-    synchronized(StocksDatabase::class.java) {
-        if (!::STOCKS_INSTANCE.isInitialized) {
-            STOCKS_INSTANCE = Room.databaseBuilder(
-                context.applicationContext,
-                StocksDatabase::class.java,
-                "stocks"
-            ).build()
-        }
-    }
-    return STOCKS_INSTANCE
+    abstract fun stocksDao(): StocksDao
 }

@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
-            app:imageUrl="@{news.imageUrl}"
+            app:imageUrl="@{news.image}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:riv_corner_radius="30dp"
@@ -98,9 +98,10 @@
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@id/source"
                 android:textSize="12sp"
-                app:timeAgo="@{news.date}"
+                app:timeAgo="@{news.datetime}"
                 tools:text="●    16 hours ago" />
 
+            <!--TODO(Add share button functionality)-->
             <ImageView
                 android:id="@+id/shareButton"
                 android:layout_width="wrap_content"

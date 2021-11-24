@@ -1,22 +1,15 @@
 package com.rishik.stockapp.util
 
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import android.text.format.DateUtils
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.LinearLayout
 
 private const val bloomUrl = "https://data.bloomberglp.com/company/sites/2/2019/01/logobbg-wht.png"
 private const val marketWatchUrl = "https://mw3.wsj.net/mw5/content/logos/mw_logo_social.png"
-
-@BindingAdapter("goneIfNotNull")
-fun goneIfNotNull(view: View, it: Any?) {
-    view.visibility = if (it != null) View.GONE else View.VISIBLE
-}
 
 @BindingAdapter("imageUrl")
 fun setImageUrl(imageView: ImageView, url: String) {
@@ -44,6 +37,15 @@ fun setTimeAgo(textView: TextView, time: Long) {
     timeAgo = "●    $timeAgo"
     textView.text = timeAgo.toString()
 }
+
+//@BindingAdapter("shareArticle")
+//fun shareArticle(imageView: ImageView, url: String) {
+//    val i = Intent(Intent.ACTION_SEND)
+//    i.type = "text/plain"
+//    i.putExtra(Intent.EXTRA_SUBJECT, "I found this great article on the StockX App")
+//    i.putExtra(Intent.EXTRA_TEXT, url)
+//    imageView.context.startActivity(Intent.createChooser(i, "Share URL"))
+//}
 
 @BindingAdapter("setMargin")
 fun setMargin(linearLayout: LinearLayout, searching: Boolean) {
