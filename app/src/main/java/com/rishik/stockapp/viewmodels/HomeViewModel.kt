@@ -10,6 +10,7 @@ class HomeViewModel @Inject constructor(repository: Repository) : ViewModel() {
 
     val news = repository.getNews().asLiveData()
     val stocks = repository.getStocks().asLiveData()
+    val smallListStocks = repository.getSmallStocks().asLiveData()
 
     //true -> searching, false -> not searching
     private val _expanded = MutableLiveData(false)

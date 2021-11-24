@@ -39,5 +39,6 @@ object AppModule {
     @Singleton
     fun provideStocksDatabase(app: Application): StocksDatabase =
         Room.databaseBuilder(app, StocksDatabase::class.java, "stocks_database")
+            .fallbackToDestructiveMigration()
             .build()
 }

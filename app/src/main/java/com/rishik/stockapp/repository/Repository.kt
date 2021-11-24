@@ -30,6 +30,8 @@ class Repository @Inject constructor(
         }
     )
 
+    fun getSmallStocks() = stocksDao.getStocksSmall()
+
     fun getNews() = networkBoundResource(
         query = {
             newsDao.getNews()

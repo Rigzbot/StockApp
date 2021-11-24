@@ -2,7 +2,7 @@ package com.rishik.stockapp.network
 
 import com.rishik.stockapp.BuildConfig
 import com.rishik.stockapp.domain.News
-import com.rishik.stockapp.domain.Stocks
+import com.rishik.stockapp.domain.Stock
 import retrofit2.http.GET
 
 private const val API_KEY = BuildConfig.API_KEY
@@ -17,5 +17,5 @@ interface StockService {
     suspend fun getNewsListAsync(): List<News>
 
     @GET("stock/symbol?exchange=US&token=$API_KEY")
-    suspend fun getStockNamesAsync(): List<Stocks>
+    suspend fun getStockNamesAsync(): List<Stock>
 }

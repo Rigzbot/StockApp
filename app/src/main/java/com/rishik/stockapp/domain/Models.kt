@@ -18,8 +18,9 @@ data class News(
 )
 
 @Entity(tableName = "databasestocks")
-data class Stocks(
+data class Stock(
     @PrimaryKey
     val symbol: String,
-    val description: String
+    val description: String,
+    val time: Long? = null
 )

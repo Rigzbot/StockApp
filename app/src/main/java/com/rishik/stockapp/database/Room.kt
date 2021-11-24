@@ -2,7 +2,7 @@ package com.rishik.stockapp.database
 
 import androidx.room.*
 import com.rishik.stockapp.domain.News
-import com.rishik.stockapp.domain.Stocks
+import com.rishik.stockapp.domain.Stock
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -30,17 +30,27 @@ abstract class NewsDatabase : RoomDatabase() {
  */
 @Dao
 interface StocksDao {
-    @Query("SELECT * FROM databasestocks LIMIT 10")
-    fun getStocks(): Flow<List<Stocks>>
+    @Query("SELECT symbol, description FROM databasestocks")
+    fun getStocks(): Flow<List<Stock>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(stocks: List<Stocks>)
+    suspend fun insertAll(stocks: List<Stock>)
 
     @Query("DELETE FROM databasestocks")
     suspend fun deleteAll()
+
+    @Query("SELECT symbol, description FROM databasestocks LIMIT 8")
+    fun getStocksSmall(): Flow<List<Stock>>
+
+    @Query("UPDATE databasestocks SET time = :currTime where symbol = :symbol")
+    suspend fun updateRecent(currTime: Long, symbol: String)
+
+    @Query("SELECT symbol, description FROM databasestocks ORDER BY time LIMIT 8")
+    fun getRecent(): Flow<List<Stock>>
 }
 
-@Database(entities = [Stocks::class], version = 1)
+@Database(entities = [Stock::class], version = 2)
 abstract class StocksDatabase: RoomDatabase() {
     abstract fun stocksDao(): StocksDao
 }
+

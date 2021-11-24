@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,15 +19,17 @@ import androidx.work.WorkManager
 import com.rishik.stockapp.R
 import com.rishik.stockapp.adapters.*
 import com.rishik.stockapp.databinding.FragmentHomeBinding
-import com.rishik.stockapp.domain.Stocks
+import com.rishik.stockapp.domain.Stock
 import com.rishik.stockapp.util.Resource
 import com.rishik.stockapp.viewmodels.HomeViewModel
 import com.rishik.stockapp.workManager.RefreshDataWorker
 import dagger.hilt.android.AndroidEntryPoint
 
+//TODO(show resent searches instead of complete list)
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
-    private var stockList = ArrayList<Stocks>()
+    private var stockList = ArrayList<Stock>()
+    private var stockListSmall = ArrayList<Stock>()
 
     private var _binding: FragmentHomeBinding? = null
     private val binding: FragmentHomeBinding get() = _binding!!
@@ -64,8 +67,10 @@ class HomeFragment : Fragment() {
             startActivity(intent)
         })
 
-        //TODO(show resent searches instead of complete list)
-        viewModelStocksAdapter = SearchAdapter(stockList)
+        //TODO(Navigate to new fragment and display stock details)
+        viewModelStocksAdapter = SearchAdapter(SearchClick {
+            Log.d("Test", it.symbol)
+        })
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
@@ -92,9 +97,10 @@ class HomeFragment : Fragment() {
 
             @SuppressLint("NotifyDataSetChanged")
             override fun onQueryTextChange(newText: String?): Boolean {
-                val tempArr = ArrayList<Stocks>()
+                val tempArr = ArrayList<Stock>()
 
                 for (stock in stockList) {
+                    if(tempArr.size >= 8) break
                     if (stock.description.lowercase()
                             .contains(newText.toString().lowercase()) || stock.symbol.lowercase()
                             .contains(newText.toString().lowercase())
@@ -102,7 +108,7 @@ class HomeFragment : Fragment() {
                         tempArr.add(stock)
                     }
                 }
-                viewModelStocksAdapter.setData(tempArr)
+                viewModelStocksAdapter.submitList(tempArr)
                 viewModelStocksAdapter.notifyDataSetChanged()
                 return true
             }
@@ -119,8 +125,12 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.stocks.observe(viewLifecycleOwner, {
-            viewModelStocksAdapter.setData(it.data!!)
-            stockList = it.data as ArrayList<Stocks>
+            stockList = it.data as ArrayList<Stock>
+        })
+
+        viewModel.smallListStocks.observe(viewLifecycleOwner, {
+            viewModelStocksAdapter.submitList(it)
+            stockListSmall = it as ArrayList<Stock>
         })
     }
 
