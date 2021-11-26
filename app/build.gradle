@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.secrets_gradle_plugin' version '0.4'
     id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 //for loading api key stored in local file

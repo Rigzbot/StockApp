@@ -13,6 +13,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -69,7 +70,8 @@ class HomeFragment : Fragment() {
 
         //TODO(Navigate to new fragment and display stock details)
         viewModelStocksAdapter = SearchAdapter(SearchClick {
-            Log.d("Test", it.symbol)
+            val action = HomeFragmentDirections.actionHomeFragmentToStockFragment(it.symbol, it.description)
+            view?.findNavController()?.navigate(action)
         })
 
         binding.recyclerView.apply {

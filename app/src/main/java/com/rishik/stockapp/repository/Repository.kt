@@ -20,7 +20,7 @@ class Repository @Inject constructor(
             stocksDao.getStocks()
         },
         fetch = {
-            api.getStockNamesAsync()
+            api.getStockNames()
         },
         saveFetchResult = {
             dbStocks.withTransaction {
@@ -37,7 +37,7 @@ class Repository @Inject constructor(
             newsDao.getNews()
         },
         fetch = {
-            api.getNewsListAsync()
+            api.getNewsList()
         },
         saveFetchResult = {
             //either both will work or none

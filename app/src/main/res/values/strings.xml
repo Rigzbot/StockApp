@@ -5,4 +5,9 @@
     <string name="discover">Discover</string>
     <string name="sharearticle">shareArticle</string>
     <string name="applogo">appLogo</string>
+    <string name="overview">Overview</string>
+    <string name="chart">Chart</string>
+    <string name="financials">Financials</string>
+    <string name="recommendations">Recommendations</string>
+    <string name="news">News</string>
 </resources>
